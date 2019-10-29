@@ -51,17 +51,37 @@ namespace Love
             {
                 string city = (comboBoxCity.SelectedItem as City).CityName;
                 ShowAll();
-                AnketsShown = new BindingList<AnketaShown>(AnketsShown
-                    .Where(a =>
-                    a.City == city &&
-                    a.Age >= numericUpDownAge.Value &&
-                    a.Pol == comboBoxPol.SelectedItem.ToString() &&
-                    (checkBoxSport.Checked == true && a.Uvlechenia.Sport.Value == checkBoxSport.Checked ||
-                     checkBoxTrav.Checked == true && a.Uvlechenia.Travelling.Value == checkBoxTrav.Checked ||
-                     checkBoxTV.Checked == true && a.Uvlechenia.TV.Value == checkBoxTV.Checked ||
-                     checkBoxShop.Checked == true && a.Uvlechenia.Shopping.Value == checkBoxShop.Checked
-                    )
-                    ).ToList());
+                if (city == "Любой")
+                {
+                    AnketsShown = new BindingList<AnketaShown>(AnketsShown
+                   .Where(a =>
+                   a.Age >= numericUpDownAge.Value &&
+                   a.Age <= numericUpDownAgeHigh.Value &&
+                   a.Pol == comboBoxPol.SelectedItem.ToString() &&
+                   (checkBoxSport.Checked == true && a.Uvlechenia.Sport.Value == checkBoxSport.Checked ||
+                    checkBoxTrav.Checked == true && a.Uvlechenia.Travelling.Value == checkBoxTrav.Checked ||
+                    checkBoxTV.Checked == true && a.Uvlechenia.TV.Value == checkBoxTV.Checked ||
+                    checkBoxShop.Checked == true && a.Uvlechenia.Shopping.Value == checkBoxShop.Checked
+                   )
+                   ).ToList());
+                }
+                else
+                {
+                    AnketsShown = new BindingList<AnketaShown>(AnketsShown
+                   .Where(a =>
+                   a.City == city &&
+                   a.Age >= numericUpDownAge.Value &&
+                   a.Age <= numericUpDownAgeHigh.Value &&
+                   a.Pol == comboBoxPol.SelectedItem.ToString() &&
+                   (checkBoxSport.Checked == true && a.Uvlechenia.Sport.Value == checkBoxSport.Checked ||
+                    checkBoxTrav.Checked == true && a.Uvlechenia.Travelling.Value == checkBoxTrav.Checked ||
+                    checkBoxTV.Checked == true && a.Uvlechenia.TV.Value == checkBoxTV.Checked ||
+                    checkBoxShop.Checked == true && a.Uvlechenia.Shopping.Value == checkBoxShop.Checked
+                   )
+                   ).ToList());
+                }
+               
+               
 
                 dataGridViewAnk.DataSource = AnketsShown;
             }
@@ -102,8 +122,16 @@ namespace Love
         {
             using (LoveDataContext db = new LoveDataContext())
             {
-                AnketaDetails anketaDetails = new AnketaDetails(Cities);
-                anketaDetails.comboBoxCity.DataSource = Cities;
+                BindingList<City> CitiesForNewAnketa = new BindingList<City>();
+                foreach (var c in Cities)
+                {
+                    if(c.CityName!="Любой")
+                    {
+                        CitiesForNewAnketa.Add(c);
+                    }
+                }
+                AnketaDetails anketaDetails = new AnketaDetails(CitiesForNewAnketa);
+                anketaDetails.comboBoxCity.DataSource = CitiesForNewAnketa;
                 DialogResult dialogResult = anketaDetails.ShowDialog();
 
                 if (dialogResult != DialogResult.OK)
